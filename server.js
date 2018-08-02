@@ -15,6 +15,14 @@ app.use(webpackDevMiddleware(compiler, {
 app.use(webpackHotMiddleware(compiler))
 
 app.get('*', (req, res) => {
+    let context = {}
+    // const html = renderToString(
+    //     <Provider store={store}>
+    //         <StaticRouter location={req.url} context={context}>
+    //             <App />
+    //         </StaticRouter>
+    //     </Provider>
+    // )
     const html = `
     <!DOCTYPE html>
      <html>
