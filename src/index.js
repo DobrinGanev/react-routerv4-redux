@@ -10,7 +10,7 @@ import configureStore from './store'
 
 const { store, history } = configureStore(window.__INITIAL_STATE__)
 const render = () => {
-  ReactDOM.render(
+  ReactDOM.hydrate(
     <AppContainer>
       <Provider store={store}>
         <App history={history} />

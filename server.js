@@ -1,8 +1,19 @@
-const webpack = require('webpack')
-const webpackDevMiddleware = require('webpack-dev-middleware')
-const webpackHotMiddleware = require('webpack-hot-middleware')
-const express = require('express')
-const config = require('./webpack.config')
+require('babel-register')({
+    presets: ['env']
+})
+import webpack from 'webpack'
+import webpackDevMiddleware from 'webpack-dev-middleware'
+import webpackHotMiddleware from 'webpack-hot-middleware'
+import express from 'express'
+import config from './webpack.config'
+import React from 'react'
+import StaticRouter from 'react-router-dom/StaticRouter'
+import { renderToString } from 'react-dom/server'
+import configureStore from './src/store'
+import { Provider } from 'react-redux'
+import App from './src/App'
+
+const { store, history } = configureStore({}, 'fromServer')
 
 const app = express()
 const compiler = webpack(config)
@@ -16,13 +27,13 @@ app.use(webpackHotMiddleware(compiler))
 
 app.get('*', (req, res) => {
     let context = {}
-    // const html = renderToString(
-    //     <Provider store={store}>
-    //         <StaticRouter location={req.url} context={context}>
-    //             <App />
-    //         </StaticRouter>
-    //     </Provider>
-    // )
+    const htmlString = renderToString(
+        <Provider store={store}>
+            <StaticRouter location={req.url} context={context}>
+                <App history={history} />
+            </StaticRouter>
+        </Provider>
+    )
     const html = `
     <!DOCTYPE html>
      <html>
@@ -31,7 +42,7 @@ app.get('*', (req, res) => {
          <title>Minimal Hot Reload</title>
        </head>
      <body>
-       <div id="react-root" />
+       <div id="react-root">${htmlString}</div>
        <script src="/dist/bundle.js"></script>
      </body>
     </html>`
