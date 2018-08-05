@@ -11,5 +11,6 @@
     ],
     "plugins": [
         "transform-es2015-modules-commonjs"
-    ]
+    ],
+    "compact": true
 }

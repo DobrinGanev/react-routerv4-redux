@@ -4,7 +4,7 @@ import createBrowserHistory from 'history/createBrowserHistory'
 import createMemoryHistory from 'history/createMemoryHistory'
 import rootReducer from './reducers'
 
-export default function configureStore(initialState = {}, fromServer) {
+export default function configureStore(initialState = { count: 0 }, fromServer) {
 
     let history
 
@@ -19,9 +19,9 @@ export default function configureStore(initialState = {}, fromServer) {
         history = createBrowserHistory()
     }
 
-    // const composeEnhancer = typeof window === 'object' ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : compose
     const store = createStore(
         connectRouter(history)(rootReducer),
+        initialState,
         compose(
             applyMiddleware(
                 routerMiddleware(history),

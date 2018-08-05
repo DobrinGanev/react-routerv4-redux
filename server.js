@@ -1,6 +1,3 @@
-require('babel-register')({
-    presets: ['env']
-})
 import webpack from 'webpack'
 import webpackDevMiddleware from 'webpack-dev-middleware'
 import webpackHotMiddleware from 'webpack-hot-middleware'
@@ -13,7 +10,8 @@ import configureStore from './src/store'
 import { Provider } from 'react-redux'
 import App from './src/App'
 
-const { store, history } = configureStore({}, 'fromServer')
+const initialState = { count: 10 }
+const { store, history } = configureStore(initialState, 'fromServer')
 
 const app = express()
 const compiler = webpack(config)
@@ -27,26 +25,28 @@ app.use(webpackHotMiddleware(compiler))
 
 app.get('*', (req, res) => {
     let context = {}
-    const htmlString = renderToString(
+    const html = renderToString(
         <Provider store={store}>
             <StaticRouter location={req.url} context={context}>
                 <App history={history} />
             </StaticRouter>
         </Provider>
     )
-    const html = `
+
+    const output = `
     <!DOCTYPE html>
      <html>
        <head>
          <meta charset="utf-8">
-         <title>Minimal Hot Reload</title>
+         <title>React Router v4</title>
        </head>
      <body>
-       <div id="react-root">${htmlString}</div>
+       <div id="react-root">${html}</div>
+       <script>	window.__INITIAL_STATE__ = ${JSON.stringify(initialState)}</script>
        <script src="/dist/bundle.js"></script>
      </body>
     </html>`
-    res.send(html)
+    res.send(output)
 })
 
 app.listen(8080, (err) => {
